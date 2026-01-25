@@ -115,7 +115,8 @@ fun PreviewClock(isPreview: Boolean) {
         LondonUGClock(scale, isPreview),
         QuickLookClock(scale, isPreview),
         SpaceAgeClock(scale, isPreview),
-        PolylineClock(scale, isPreview)
+        PolylineClock(scale, isPreview),
+        BlankClock(scale, isPreview)
     )
 
     val pagerState = rememberPagerState { clocks.size }
@@ -677,6 +678,54 @@ sealed class ClockItem {
         }
     }
 
+    class BlankClock(
+        override val name: String,
+        override val scale: Float,
+        val isPreview: Boolean = false
+    ) : ClockItem() {
+        override val dateAlignment: DateAlignment? = null
+
+        @Composable
+        override fun Render(currentTime: Date) {
+            val context = LocalContext.current
+            val density = LocalDensity.current
+
+            val previewMultiplier = if (isPreview) context.previewScale else 1f
+            val renderScale = scale * previewMultiplier
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp * renderScale)
+                    .padding(horizontal = 32.dp * renderScale),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.VisibilityOff,
+                        contentDescription = "No clock",
+                        modifier = Modifier.size(32.dp * renderScale),
+                        tint = Color.White.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp * renderScale))
+                    Text(
+                        text = "No clock",
+                        fontSize = with(density) { (14.dp * renderScale).toSp() },
+                        style = TextStyle(
+                            platformStyle = PlatformTextStyle(
+                                includeFontPadding = false
+                            )
+                        ),
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+            }
+        }
+    }
+
     class GraphicClock(
         override val name: String,
         override val dateAlignment: DateAlignment? = DateAlignment.CENTER,
@@ -872,3 +921,7 @@ fun NDotClock(scale: Float, isPreview: Boolean = false): ClockItem {
 @Composable
 fun GraphicClock(scale: Float, isPreview: Boolean = false): ClockItem =
     ClockItem.GraphicClock("GRAPHIC", dateAlignment = null, scale = scale, isPreview = isPreview)
+
+@Composable
+fun BlankClock(scale: Float, isPreview: Boolean = false): ClockItem =
+    ClockItem.BlankClock("BLANK", scale = scale, isPreview = isPreview)
