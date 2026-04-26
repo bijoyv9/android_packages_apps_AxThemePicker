@@ -37,6 +37,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -161,7 +162,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
                     put("axes", JSONArray())
                 }
                 .toString()
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putString(
                 context.contentResolver,
                 ClockSettingsRepository.SETTING_CLOCK_FACE,
@@ -172,7 +173,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
 
     fun writeAlignment(value: String) {
         currentAlignment = value
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putString(
                 context.contentResolver,
                 ClockSettingsRepository.SETTING_ALIGNMENT,
@@ -183,7 +184,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
 
     fun writeSize(value: String) {
         currentSize = value
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putString(
                 context.contentResolver,
                 ClockSettingsRepository.SETTING_SIZE,
@@ -194,7 +195,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
 
     fun writeDepth(enabled: Boolean) {
         depthEnabled = enabled
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putInt(
                 context.contentResolver,
                 DEPTH_SETTINGS_KEY,
@@ -205,7 +206,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
 
     fun writeDatePosition(value: String) {
         currentDatePosition = value
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putString(
                 context.contentResolver,
                 ClockSettingsRepository.SETTING_DATE_POSITION,
@@ -216,7 +217,7 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
 
     fun writeClockColor(value: String) {
         currentClockColor = value
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             Settings.Secure.putString(
                 context.contentResolver,
                 ClockSettingsRepository.SETTING_CLOCK_COLOR,
@@ -322,6 +323,17 @@ fun ClockFaceSheet(visible: Boolean, heightFraction: Float = 0.65f, onDismiss: (
                 selected = currentAlignment,
                 onSelect = { writeAlignment(it) },
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            TextButton(
+                onClick = {
+                    scope.launch {
+                        ClockSettingsRepository.saveHeightOffset(context, 0f)
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.reset_to_default))
+            }
 
             if (hasDateSupport) {
                 Spacer(modifier = Modifier.height(20.dp))

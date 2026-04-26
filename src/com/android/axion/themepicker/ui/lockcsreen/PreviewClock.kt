@@ -136,6 +136,7 @@ fun PreviewClock(isPreview: Boolean, isRegionDark: Boolean = true) {
                 ClockSettingsRepository.clockFaceUri,
                 ClockSettingsRepository.alignmentUri,
                 ClockSettingsRepository.sizeUri,
+                ClockSettingsRepository.heightOffsetUri,
             )
         uris.forEach { resolver.registerContentObserver(it, false, observer) }
         onDispose { resolver.unregisterContentObserver(observer) }
@@ -179,6 +180,8 @@ fun PreviewClock(isPreview: Boolean, isRegionDark: Boolean = true) {
         remember(clockId, settingsVersion) {
             clockProvider.createClock(context, ClockSettings(clockId = clockId)).apply {
                 initialize(isDarkTheme = true, dozeFraction = 0f, foldFraction = 0f)
+                (smallClock.view as? AxClockView)?.onClockLayoutChanged(true, false)
+                (largeClock.view as? AxClockView)?.onClockLayoutChanged(true, true)
                 (smallClock.view as? AxClockView)?.apply {
                     depthEffectEnabled = false
                     touchEnabled = false
